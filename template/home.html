@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey & Credit Score Viewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Reset and general styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(120deg, #4a90e2, #1e3a8a);
+            color: #fff;
+        }
+        .container {
+            text-align: center;
+            max-width: 900px;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            animation: slideIn 1s ease-out;
+        }
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+            color: #d9e2ec;
+        }
+
+        /* Animated Buttons */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .btn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fff;
+            background: #4a90e2;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn:hover {
+            transform: scale(1.1);
+            background: #3a75c4;
+        }
+
+        /* Section Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Additional elements styling */
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 2rem;
+            color: #d9e2ec;
+        }
+        .feature-card {
+            width: 280px;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        .feature-card i {
+            font-size: 2rem;
+            color: #4a90e2;
+            margin-bottom: 1rem;
+        }
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Welcome to Survey & Credit Score Viewer</h1>
+    <p>Get insights on your credit score and participate in exciting surveys to earn rewards. We value your opinions and help you track your financial health with ease.</p>
+
+    <div class="buttons">
+        <a href="{% url 'submit_response' %}" class="btn">
+            <i class="fas fa-clipboard-list"></i> Start Survey
+        </a>
+        <a href="{% url 'calculate_credit_score' %}" class="btn">
+            <i class="fas fa-chart-line"></i> View Credit Score
+        </a>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <i class="fas fa-user-shield"></i>
+            <h3>Secure & Private</h3>
+            <p>Your data is kept confidential and secure, ensuring your privacy is always protected.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-gift"></i>
+            <h3>Earn Rewards</h3>
+            <p>Participate in surveys and earn points that you can redeem for exciting rewards.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-credit-card"></i>
+            <h3>Free Credit Check</h3>
+            <p>Check your credit score without any cost and get valuable insights on your credit health.</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

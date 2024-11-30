@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    /* Container Styling */
+    .container {
+        max-width: 600px;
+        margin: 5% auto;
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    /* Heading Animation */
+    h2 {
+        font-size: 2.5rem;
+        color: #333;
+        font-weight: bold;
+        animation: slideIn 1s ease-out;
+    }
+
+    /* Credit Score Styling and Animation */
+    .credit-score {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #28a745;
+        margin: 1rem 0;
+        animation: popIn 1s ease-out;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes popIn {
+        0% { transform: scale(0.5); opacity: 0; }
+        70% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); }
+    }
+
+    /* Animated Text Transition */
+    .highlight {
+        display: inline-block;
+        background: linear-gradient(90deg, #28a745, #218838);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: colorShift 2s infinite alternate;
+    }
+
+    @keyframes colorShift {
+        0% { color: #28a745; }
+        100% { color: #218838; }
+    }
+</style>
+
+<div class="container">
+    <h2>Your Credit Score</h2>
+    <p>Your total credit score is: <strong class="credit-score highlight" id="creditScore">0</strong></p>
+</div>
+
+<script>
+    // Credit Score Count-Up Animation
+    document.addEventListener("DOMContentLoaded", function() {
+        const creditScoreElement = document.getElementById("creditScore");
+        const creditScore = {{ credit_score }};
+        let count = 0;
+        const duration = 2000; // Duration of the animation in ms
+        const interval = duration / creditScore;
+
+        const counter = setInterval(() => {
+            count += 1;
+            creditScoreElement.textContent = count;
+            if (count >= creditScore) {
+                clearInterval(counter);
+            }
+        }, interval);
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% block content %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<style>
+    /* Modal Styling */
+    .modal-content {
+        background: #f8f9fa;
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .modal-header {
+        background: linear-gradient(135deg, #0062cc, #0056b3);
+        color: #fff;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+    }
+    .modal-title {
+        font-weight: bold;
+        font-size: 1.25rem;
+    }
+    .modal-body {
+        padding: 2rem;
+    }
+    .modal-footer {
+        background-color: #f1f1f1;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+    }
+    .btn-primary, .btn-success {
+        font-weight: 600;
+    }
+
+/* Toast Styling */
+#toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    min-width: 300px;
+    padding: 1.5rem 2rem;
+    background: #28a745;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 12px;
+    display: none;
+    opacity: 0;
+    animation: fadeInOut 5s ease-in-out;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8); /* Initial scale */
+}
+#toast.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Fade-in and bounce animation */
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        bottom: 10px;
+        transform: scale(0.8);
+    }
+    10% {
+        opacity: 1;
+        bottom: 30px;
+        transform: scale(1.1); /* Bounce scale */
+    }
+    20% {
+        transform: scale(1);
+    }
+    90% {
+        opacity: 1;
+        bottom: 30px;
+    }
+    100% {
+        opacity: 0;
+        bottom: 10px;
+        transform: scale(0.8);
+    }
+}
+
+</style>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Answer the following questions</h2>
+    <button id="start" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#questionModal">Start Quiz</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="questionModal" tabindex="-1" role="dialog" aria-labelledby="questionModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="questionModalLabel">Question</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- Question and answers will be injected here -->
+                </div>
+                <div class="modal-footer">
+                    <button id="prev" class="btn btn-success">Previous</button>
+                    <button id="next" class="btn btn-primary">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast">Response saved successfully!</div>
+
+<script>
+    let currentQuestionIndex = 0;
+    const questions = {{ questions|safe }};
+    const modalBody = document.getElementById('modal-body');
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+
+    function loadQuestion(index) {
+        const question = questions[index];
+        modalBody.innerHTML = `
+            <h4>${question.question_text}</h4>
+            <div>
+                <input type="radio" name="answer" value="a" id="answer_a">
+                <label for="answer_a">${question.answer_a}</label>
+            </div>
+            <div>
+                <input type="radio" name="answer" value="b" id="answer_b">
+                <label for="answer_b">${question.answer_b}</label>
+            </div>
+            <div>
+                <input type="radio" name="answer" value="c" id="answer_c">
+                <label for="answer_c">${question.answer_c}</label>
+            </div>
+            <div>
+                <input type="radio" name="answer" value="d" id="answer_d">
+                <label for="answer_d">${question.answer_d}</label>
+            </div>
+        `;
+        prevButton.disabled = index === 0;
+    }
+
+nextButton.addEventListener('click', function() {
+    const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+    if (!selectedAnswer) {
+        alert('Please select an answer before proceeding.');
+        return;
+    }
+
+    const answerValue = selectedAnswer.value;
+    const questionId = questions[currentQuestionIndex].id;
+
+    fetch("{% url 'submit_response' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            question_id: questionId,
+            answer: answerValue
+        })
+    }).then(response => {
+        if (response.ok) {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion(currentQuestionIndex);
+            } else {
+                showToast();
+                $('#questionModal').modal('hide');
+            }
+        } else {
+            return response.json().then(data => {
+                alert(data.message); // Show error message
+            });
+        }
+    });
+});
+
+prevButton.addEventListener('click', function() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion(currentQuestionIndex);
+    }
+});
+
+    document.getElementById('start').addEventListener('click', function() {
+        currentQuestionIndex = 0;
+        loadQuestion(currentQuestionIndex);
+    });
+
+    $('#questionModal').on('hidden.bs.modal', function () {
+        currentQuestionIndex = 0;
+    });
+
+    $('#questionModal').on('show.bs.modal', function () {
+        loadQuestion(currentQuestionIndex);
+    });
+
+    function showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+            window.location.href = "{% url 'calculate_credit_score' %}";
+        }, 1000);
+    }
+</script>
+{% endblock %}
